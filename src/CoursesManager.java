@@ -11,6 +11,8 @@ import javax.swing.JList;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class CoursesManager extends JFrame {
 
@@ -78,11 +80,35 @@ public class CoursesManager extends JFrame {
 		
 		btnApplyFilter = new JButton("Aplicar filtro");
 		
+		btnApplyFilter.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (false) {
+					
+					btnNewCourse.setEnabled(true);
+					
+				}
+				
+			}
+			
+		});
+		
 		cmbLanguageBase = new JComboBox();
 		
 		cmbLanguageCourse = new JComboBox();
 		
 		btnNewCourse = new JButton("Crear curso");
+		
+		btnNewCourse.setEnabled(false);
+		
+		btnNewCourse.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+			
+		});
 		
 		lblLevels = new JLabel("Niveles de la categoría seleccionada");
 		
