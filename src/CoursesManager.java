@@ -4,15 +4,24 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.ActionEvent;
+
+import model.*;
 
 public class CoursesManager extends JFrame {
 
@@ -22,13 +31,15 @@ public class CoursesManager extends JFrame {
 	private JLabel lblLanguageBase;
 	private JLabel lblLanguageCourse;
 	private JButton btnApplyFilter;
-	private JComboBox cmbLanguageBase;
-	private JComboBox cmbLanguageCourse;
+	private JComboBox<Language> cmbLanguageBase;
+	private JComboBox<Language> cmbLanguageCourse;
 	private JLabel lblLevels;
 	private JLabel lblCategories;
 	private JLabel lblCourses;
-	private JList listCourses;
-	private JList listCategories;
+	private DefaultListModel<Course> listModelCourses;
+	private JList<Course> listCourses;
+	private DefaultListModel<Category> listModelCategories;
+	private JList<Category> listCategories;
 	private JList listLevels;
 	private JButton btnNewCourse;
 	private JButton btnNewCategory;
@@ -37,35 +48,9 @@ public class CoursesManager extends JFrame {
 	private JButton btnShowExercises;
 	private GroupLayout glContentPane;
 
-	public static void main(String[] args) {
-		
-		EventQueue.invokeLater(new Runnable() {
-			
-			public void run() {
-				
-				try {
-					
-					CoursesManager frame = new CoursesManager();
-					frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-					frame.setVisible(true);
-					
-				} catch (Exception e) {
-					
-					e.printStackTrace();
-				}
-				
-			}
-			
-		});
-		
-	}
-
-	/**
-	 * Create the frame.
-	 */
 	public CoursesManager() {
 		
-		setIconImage(Main.iconImage);
+		setIconImage(Interface.iconImage);
 		
 		setBounds(100, 100, 1277, 790);
 		contentPane = new JPanel();
@@ -84,19 +69,67 @@ public class CoursesManager extends JFrame {
 			
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if (false) {
+				listModelCourses = new DefaultListModel<Course>();
+				
+				if (cmbLanguageBase.getSelectedIndex() == 0 && cmbLanguageCourse.getSelectedIndex() == 0) {
 					
-					btnNewCourse.setEnabled(true);
+					JOptionPane.showMessageDialog(null, "Asegurese de seleccionar como minimo un idioma origen o un idioma destino.");
+					
+				} else if (cmbLanguageBase.getSelectedIndex() == cmbLanguageCourse.getSelectedIndex()) {
+					
+					JOptionPane.showMessageDialog(null, "Asegurese de no seleccionar el mismo idioma como origen y destino.");
+					
+				} else if (cmbLanguageBase.getSelectedIndex() == 0) {
+									
+					for (int i = 0; i < Interface.coursesList.size(); i++) {
+						
+						if (Interface.coursesList.get(i).getLanguageCourse().getId() == cmbLanguageCourse.getSelectedIndex()) {
+														
+							listModelCourses.addElement(Interface.coursesList.get(i));
+							
+						}
+						
+					}
+					
+				} else if (cmbLanguageCourse.getSelectedIndex() == 0) {
+					
+					for (int i = 0; i < Interface.coursesList.size(); i++) {
+						
+						if (Interface.coursesList.get(i).getLanguageBase().getId() == cmbLanguageBase.getSelectedIndex()) {	
+												
+							listModelCourses.addElement(Interface.coursesList.get(i));
+							
+						}
+						
+					}
+					
+				} else {
+					
+					for (int i = 0; i < Interface.coursesList.size(); i++) {
+						
+						if (Interface.coursesList.get(i).getLanguageBase().getId() == cmbLanguageBase.getSelectedIndex() && Interface.coursesList.get(i).getLanguageCourse().getId() == cmbLanguageCourse.getSelectedIndex()) {
+												
+							listModelCourses.addElement(Interface.coursesList.get(i));
+							
+						}
+						
+					}
 					
 				}
+				
+				updateCoursesList(listModelCourses);
+				listModelCategories = new DefaultListModel<Category>();
+				listCategories.setModel(listModelCategories);
+				btnNewCategory.setEnabled(false);
 				
 			}
 			
 		});
 		
-		cmbLanguageBase = new JComboBox();
-		
+		cmbLanguageBase = new JComboBox();		
 		cmbLanguageCourse = new JComboBox();
+		
+		setCmbOptions();
 		
 		btnNewCourse = new JButton("Crear curso");
 		
@@ -105,6 +138,16 @@ public class CoursesManager extends JFrame {
 		btnNewCourse.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
+				
+				Course c = new Course(Interface.languagesList.get(cmbLanguageBase.getSelectedIndex()), Interface.languagesList.get(cmbLanguageCourse.getSelectedIndex()));
+				
+				Interface.coursesList.add(c);
+				
+				listModelCourses.addElement(c);
+				
+				listCourses.setModel(listModelCourses);
+				
+				btnNewCourse.setEnabled(false);
 				
 			}
 			
@@ -118,17 +161,61 @@ public class CoursesManager extends JFrame {
 		
 		listCourses = new JList();
 		
+		listCourses.addMouseListener(new MouseAdapter() {
+			
+			public void mouseClicked(MouseEvent me) {
+				
+				JList source = (JList) me.getSource();
+				
+				int index =  source.getSelectedIndex();
+				
+				if (index >= 0) {
+					
+					btnNewCategory.setEnabled(true);
+					
+					updateCategoriesList();
+					
+				}
+				
+			}
+			
+		});
+		
 		listCategories = new JList();
 		
 		listLevels = new JList();
 		
 		btnNewCategory = new JButton("Añadir categoría");
 		
+		btnNewCategory.setEnabled(false);
+		
+		btnNewCategory.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				Category c = new Category("Categoría " + (Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1).getCategoriesList().size() + 1));
+				
+				Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1).addCategory(c);
+				
+				listModelCategories.addElement(c);
+				
+				listCategories.setModel(listModelCategories);
+				
+			}
+		});
+		
 		btnNewLevel = new JButton("Añadir nivel");
+		
+		btnNewLevel.setEnabled(false);
 		
 		btnNewExercise = new JButton("AÑADIR PREGUNTA");
 		
+		btnNewExercise.setEnabled(false);
+		
 		btnShowExercises = new JButton("VISUALIZAR PREGUNTAS");
+		
+		btnShowExercises.setEnabled(false);
 		
 		glContentPane = new GroupLayout(contentPane);
 		
@@ -147,7 +234,7 @@ public class CoursesManager extends JFrame {
 								.addGroup(glContentPane.createSequentialGroup()
 									.addGap(60)
 									.addGroup(glContentPane.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(listCategories, GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
+										.addComponent(listCourses, GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
 										.addComponent(lblCourses))))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(glContentPane.createParallelGroup(Alignment.LEADING)
@@ -160,7 +247,7 @@ public class CoursesManager extends JFrame {
 											.addGap(117)
 											.addGroup(glContentPane.createParallelGroup(Alignment.LEADING, false)
 												.addComponent(lblCategories, GroupLayout.PREFERRED_SIZE, 259, GroupLayout.PREFERRED_SIZE)
-												.addComponent(listCourses, GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+												.addComponent(listCategories, GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
 												.addComponent(btnNewCategory, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
 									.addPreferredGap(ComponentPlacement.RELATED, 137, Short.MAX_VALUE)
 									.addGroup(glContentPane.createParallelGroup(Alignment.LEADING, false)
@@ -211,8 +298,8 @@ public class CoursesManager extends JFrame {
 						.addComponent(lblLevels))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(glContentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(listCourses, GroupLayout.PREFERRED_SIZE, 226, GroupLayout.PREFERRED_SIZE)
 						.addComponent(listCategories, GroupLayout.PREFERRED_SIZE, 226, GroupLayout.PREFERRED_SIZE)
+						.addComponent(listCourses, GroupLayout.PREFERRED_SIZE, 226, GroupLayout.PREFERRED_SIZE)
 						.addComponent(listLevels, GroupLayout.PREFERRED_SIZE, 226, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(glContentPane.createParallelGroup(Alignment.BASELINE)
@@ -228,4 +315,48 @@ public class CoursesManager extends JFrame {
 		contentPane.setLayout(glContentPane);
 		
 	}
+	
+	public void setCmbOptions() {
+				
+		for (int i = 0; i < Interface.languagesList.size(); i++) {
+			
+			cmbLanguageBase.addItem(Interface.languagesList.get(i));
+			cmbLanguageCourse.addItem(Interface.languagesList.get(i));
+			
+		}		
+		
+	}
+	
+	public void updateCoursesList(DefaultListModel<Course> listModelCourses) {
+		
+		if (listModelCourses.getSize() == 0 && cmbLanguageBase.getSelectedIndex() != 0 && cmbLanguageCourse.getSelectedIndex() != 0) {
+			
+			btnNewCourse.setEnabled(true);
+			
+		} else {
+			
+			btnNewCourse.setEnabled(false);
+			
+		}
+	
+		listCourses.setModel(listModelCourses);
+		
+	}
+	
+	public void updateCategoriesList() {
+		
+		listModelCategories = new DefaultListModel<Category>();
+		
+		Course c = Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1);
+		
+		for (int i = 0; i < c.getCategoriesList().size(); i++) {
+			
+			listModelCategories.addElement(c.getCategoriesList().get(i));
+			
+		}
+		
+		listCategories.setModel(listModelCategories);
+		
+	}
+	
 }
