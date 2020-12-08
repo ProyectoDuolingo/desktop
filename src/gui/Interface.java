@@ -1,3 +1,4 @@
+package gui;
 import java.awt.BorderLayout;
 
 import java.awt.EventQueue;
@@ -114,8 +115,8 @@ class Interface extends JFrame {
 		
 		languagesList.add(new Language("Seleccione un idioma", "XX"));
 		
-		FileReader fr = new FileReader ("C:\\Users\\krysi\\eclipse-workspace\\desktop\\src\\resources\\languages.txt");
-		
+		FileReader fr = new FileReader ("src/resources/languages.txt");
+			
 		BufferedReader br = new BufferedReader(fr);
 		
 		String languageName;
