@@ -41,7 +41,8 @@ public class CoursesManager extends JFrame {
 	private JList<Course> listCourses;
 	private DefaultListModel<Category> listModelCategories;
 	private JList<Category> listCategories;
-	private JList listLevels;
+	private DefaultListModel<Level> listModelLevels;
+	private JList <Level> listLevels;
 	private JButton btnNewCourse;
 	private JButton btnNewCategory;
 	private JButton btnNewLevel;
@@ -154,9 +155,9 @@ public class CoursesManager extends JFrame {
 			
 		});
 		
-		lblLevels = new JLabel("Niveles de la categoría seleccionada");
+		lblLevels = new JLabel("Niveles de la categorÃ­a seleccionada");
 		
-		lblCategories = new JLabel("Categorías del curso seleccionado");
+		lblCategories = new JLabel("CategorÃ­as del curso seleccionado");
 		
 		lblCourses = new JLabel("Cursos");
 		
@@ -186,7 +187,7 @@ public class CoursesManager extends JFrame {
 		
 		listLevels = new JList();
 		
-		btnNewCategory = new JButton("Añadir categoría");
+		btnNewCategory = new JButton("AÃ±adir categorÃ­a");
 		
 		btnNewCategory.setEnabled(false);
 		
@@ -195,7 +196,9 @@ public class CoursesManager extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				Category c = new Category("Categoría " + (Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1).getCategoriesList().size() + 1));
+				String categoryName = JOptionPane.showInputDialog("Nom de la categorÃ­a: ");
+				
+				Category c = new Category(categoryName);
 				
 				Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1).addCategory(c);
 				
@@ -204,13 +207,59 @@ public class CoursesManager extends JFrame {
 				listCategories.setModel(listModelCategories);
 				
 			}
+			
 		});
 		
-		btnNewLevel = new JButton("Añadir nivel");
+		listCategories.addMouseListener(new MouseAdapter() {
+			
+			public void mouseClicked(MouseEvent me) {
+				
+				JList source = (JList) me.getSource();
+				
+				int index =  source.getSelectedIndex();
+				
+				if (index >= 0) {
+					
+					btnNewLevel.setEnabled(true);
+					
+					updateLevelsList();
+					
+				}
+				
+			}
+			
+		});		
+		
+		listModelLevels = new DefaultListModel<Level>();
+		listLevels.setModel(listModelLevels);
+		
+		btnNewLevel = new JButton("AÃ±adir nivel");
 		
 		btnNewLevel.setEnabled(false);
 		
-		btnNewExercise = new JButton("AÑADIR PREGUNTA");
+		btnNewLevel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				String levelName = JOptionPane.showInputDialog("Nom del nivell: ");
+				
+				Level l = new Level(levelName);
+				
+				Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1).getCategoriesList().get((int) listCategories.getSelectedValue().getId() - 1).addLevel(l);
+				
+				listModelLevels.addElement(l);
+				
+				listLevels.setModel(listModelLevels);
+				
+			}
+		});
+		
+		
+		
+		
+		
+		btnNewExercise = new JButton("AÃ‘ADIR PREGUNTA");
 		
 		btnNewExercise.setEnabled(false);
 		
@@ -357,6 +406,22 @@ public class CoursesManager extends JFrame {
 		}
 		
 		listCategories.setModel(listModelCategories);
+		
+	}
+	
+public void updateLevelsList() {
+		
+		listModelLevels = new DefaultListModel<Level>();
+		
+		Category c = Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1).getCategoriesList().get((int) listCategories.getSelectedValue().getId() - 1);
+		
+		for (int i = 0; i < c.getLevelsList().size(); i++) {
+			
+			listModelLevels.addElement(c.getLevelsList().get(i));
+			
+		}
+		
+		listLevels.setModel(listModelLevels);
 		
 	}
 	

@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -15,12 +16,15 @@ public class Category {
 	
 	private int finalLevel;
 	
+	private List<Level> levelsList;
+	
 	public Category(String categoryName) {
 		
 		this.id = totalCategories;
 		this.categoryName = categoryName;
 		this.initialLevel = 1;
 		this.finalLevel = 5;
+		this.levelsList = new ArrayList<Level>();
 		
 		totalCategories++;
 	}
@@ -55,11 +59,25 @@ public class Category {
 
 	public void setFinalLevel(int finalLevel) {
 		this.finalLevel = finalLevel;
-	}	
+	}
+	
+	public List<Level> getLevelsList() {
+		return levelsList;
+	}
+	
+	public void setCategoriesList(List<Level> levelsList) {
+		this.levelsList = levelsList;
+	}
 	
 	public String toString() {
 		
 		return categoryName;
+		
+	}
+	
+	public void addLevel(Level l) {
+		
+		this.levelsList.add(l);
 		
 	}
 
