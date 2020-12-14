@@ -21,14 +21,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 
-import model.*;
+import lib.duolingoproject.hibernate.model.*;
+import lib.duolingoproject.hibernate.dao.*;
+import lib.duolingoproject.hibernate.dao.i.*;
 
 class Interface extends JFrame {
 	
 	public static Image iconImage;
-	
-	public static List<Language> languagesList;
-	public static List<Course> coursesList;
 	
 	private JMenuBar menuBar;
 	private JMenu menu;	
@@ -36,6 +35,9 @@ class Interface extends JFrame {
 	private JPanel contentPane;
 	private JMenuItem menuCoursesManager;
 	private JMenuItem menuOthers;
+	
+	static Interface frame;
+	static CoursesManager cm;
 	
 	public static void main(String[] args) {
 		
@@ -45,12 +47,11 @@ class Interface extends JFrame {
 				
 				try {
 					
-					Interface frame = new Interface();
+					frame = new Interface();
 					frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 					frame.setVisible(true);
-					
-					getLanguages();
-					getCourses();
+
+//					createLanguages();
 					
 				} catch (Exception e) {
 					
@@ -87,11 +88,9 @@ class Interface extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				CoursesManager coursesManager = new CoursesManager();
-				Interface frame = new Interface();
+				cm = new CoursesManager();
 
-				frame.setVisible(false);
-				coursesManager.setVisible(true);
+				cm.setVisible(true);
 				
 			}			
 			
@@ -106,50 +105,6 @@ class Interface extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
 		setContentPane(contentPane);
-		
-	}
-	
-	public static void getLanguages() throws IOException {
-		
-		languagesList = new ArrayList<Language>();
-		
-		languagesList.add(new Language("Seleccione un idioma", "XX"));
-		
-		FileReader fr = new FileReader ("src/resources/languages.txt");
-			
-		BufferedReader br = new BufferedReader(fr);
-		
-		String languageName;
-		String languageCode;
-		
-		String languageData;
-		
-		while ((languageData = br.readLine()) != null) {
-			
-			languageName = languageData.substring(0, languageData.length()-3);
-			languageCode = languageData.substring(languageName.length() + 1);
-			
-			languagesList.add(new Language(languageName, languageCode));
-			
-		}
-	
-		br.close();
-		
-	}
-	
-	public static void getCourses() {
-		
-		coursesList = new ArrayList<Course>();
-		
-		Course c1 = new Course(languagesList.get(1), languagesList.get(2));
-		Course c2 = new Course(languagesList.get(2), languagesList.get(3));
-		Course c3 = new Course(languagesList.get(3), languagesList.get(4));
-		Course c4 = new Course(languagesList.get(1), languagesList.get(4));
-		
-		coursesList.add(c1);
-		coursesList.add(c2);
-		coursesList.add(c3);
-		coursesList.add(c4);
 		
 	}
 

@@ -1,5 +1,6 @@
 package gui;
 import java.awt.BorderLayout;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -20,11 +21,23 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.event.ActionEvent;
 
-import model.*;
+import lib.duolingoproject.hibernate.model.*;
+import lib.duolingoproject.hibernate.dao.*;
+import lib.duolingoproject.hibernate.dao.i.*;
 
 public class CoursesManager extends JFrame {
+	
+	private List<Course> coursesList; 
+	private List<Language> languagesList;
+	private List<Category> categoriesList;
+	private List<Level> levelsList;
 
 	private JPanel contentPane;
 	
@@ -42,7 +55,7 @@ public class CoursesManager extends JFrame {
 	private DefaultListModel<Category> listModelCategories;
 	private JList<Category> listCategories;
 	private DefaultListModel<Level> listModelLevels;
-	private JList <Level> listLevels;
+	private JList<Level> listLevels;
 	private JButton btnNewCourse;
 	private JButton btnNewCategory;
 	private JButton btnNewLevel;
@@ -59,6 +72,18 @@ public class CoursesManager extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
+		try {
+			
+//			createLanguages();
+			getLanguages();
+			
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
 		lblManageCourses = new JLabel("Cursos existentes (filtrar por origen y/o destino)");
 		
 		lblLanguageBase = new JLabel("Idioma de origen");
@@ -71,58 +96,35 @@ public class CoursesManager extends JFrame {
 			
 			public void actionPerformed(ActionEvent arg0) {
 				
+				ICourseDao courseManager = new CourseDaoImpl();
+				
 				listModelCourses = new DefaultListModel<Course>();
 				
-				if (cmbLanguageBase.getSelectedIndex() == 0 && cmbLanguageCourse.getSelectedIndex() == 0) {
+				listCourses.setModel(listModelCourses);
+				
+				listModelCategories = new DefaultListModel<Category>();
+				
+				listCategories.setModel(listModelCategories);
+				
+				btnNewCategory.setEnabled(false);
+				
+				if (cmbLanguageBase.getSelectedIndex() == 0 && cmbLanguageCourse.getSelectedIndex() == 0) {					
 					
-					JOptionPane.showMessageDialog(null, "Asegurese de seleccionar como minimo un idioma origen o un idioma destino.");
+					JOptionPane.showMessageDialog(null, "Asegúrese de seleccionar como mínimo un idioma origen o un idioma destino.");
+					
+					return;
 					
 				} else if (cmbLanguageBase.getSelectedIndex() == cmbLanguageCourse.getSelectedIndex()) {
 					
-					JOptionPane.showMessageDialog(null, "Asegurese de no seleccionar el mismo idioma como origen y destino.");
+					JOptionPane.showMessageDialog(null, "Asegúrese de no seleccionar el mismo idioma como origen y destino.");
 					
-				} else if (cmbLanguageBase.getSelectedIndex() == 0) {
-									
-					for (int i = 0; i < Interface.coursesList.size(); i++) {
-						
-						if (Interface.coursesList.get(i).getLanguageCourse().getId() == cmbLanguageCourse.getSelectedIndex()) {
-														
-							listModelCourses.addElement(Interface.coursesList.get(i));
-							
-						}
-						
-					}
-					
-				} else if (cmbLanguageCourse.getSelectedIndex() == 0) {
-					
-					for (int i = 0; i < Interface.coursesList.size(); i++) {
-						
-						if (Interface.coursesList.get(i).getLanguageBase().getId() == cmbLanguageBase.getSelectedIndex()) {	
-												
-							listModelCourses.addElement(Interface.coursesList.get(i));
-							
-						}
-						
-					}
+					return;
 					
 				} else {
 					
-					for (int i = 0; i < Interface.coursesList.size(); i++) {
-						
-						if (Interface.coursesList.get(i).getLanguageBase().getId() == cmbLanguageBase.getSelectedIndex() && Interface.coursesList.get(i).getLanguageCourse().getId() == cmbLanguageCourse.getSelectedIndex()) {
-												
-							listModelCourses.addElement(Interface.coursesList.get(i));
-							
-						}
-						
-					}
+					updateCoursesList();
 					
 				}
-				
-				updateCoursesList(listModelCourses);
-				listModelCategories = new DefaultListModel<Category>();
-				listCategories.setModel(listModelCategories);
-				btnNewCategory.setEnabled(false);
 				
 			}
 			
@@ -139,11 +141,15 @@ public class CoursesManager extends JFrame {
 		
 		btnNewCourse.addActionListener(new ActionListener() {
 			
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {				
 				
-				Course c = new Course(Interface.languagesList.get(cmbLanguageBase.getSelectedIndex()), Interface.languagesList.get(cmbLanguageCourse.getSelectedIndex()));
+				ICourseDao courseManager = new CourseDaoImpl();
 				
-				Interface.coursesList.add(c);
+				Course c = new Course(languagesList.get(cmbLanguageBase.getSelectedIndex()), languagesList.get(cmbLanguageCourse.getSelectedIndex()));
+
+				courseManager.saveCourse(c);				
+				
+				coursesList.add(c);
 				
 				listModelCourses.addElement(c);
 				
@@ -155,9 +161,9 @@ public class CoursesManager extends JFrame {
 			
 		});
 		
-		lblLevels = new JLabel("Niveles de la categorÃ­a seleccionada");
+		lblLevels = new JLabel("Niveles de la categoría seleccionada");
 		
-		lblCategories = new JLabel("CategorÃ­as del curso seleccionado");
+		lblCategories = new JLabel("Categorías del curso seleccionado");
 		
 		lblCourses = new JLabel("Cursos");
 		
@@ -185,31 +191,6 @@ public class CoursesManager extends JFrame {
 		
 		listCategories = new JList();
 		
-		listLevels = new JList();
-		
-		btnNewCategory = new JButton("AÃ±adir categorÃ­a");
-		
-		btnNewCategory.setEnabled(false);
-		
-		btnNewCategory.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				String categoryName = JOptionPane.showInputDialog("Nom de la categorÃ­a: ");
-				
-				Category c = new Category(categoryName);
-				
-				Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1).addCategory(c);
-				
-				listModelCategories.addElement(c);
-				
-				listCategories.setModel(listModelCategories);
-				
-			}
-			
-		});
-		
 		listCategories.addMouseListener(new MouseAdapter() {
 			
 			public void mouseClicked(MouseEvent me) {
@@ -230,10 +211,36 @@ public class CoursesManager extends JFrame {
 			
 		});		
 		
-		listModelLevels = new DefaultListModel<Level>();
-		listLevels.setModel(listModelLevels);
+		listLevels = new JList();
 		
-		btnNewLevel = new JButton("AÃ±adir nivel");
+		btnNewCategory = new JButton("Añadir categoría");
+		
+		btnNewCategory.setEnabled(false);
+		
+		btnNewCategory.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				ICategoryDao categoryManager = new CategoryDaoImpl();
+
+				String categoryName = JOptionPane.showInputDialog("Introduce el nombre de la categoría: ");
+				
+				Category c = new Category(categoryName , listCourses.getSelectedValue());
+				
+				categoryManager.saveCategory(c);
+							
+				listCourses.getSelectedValue().addCategory(c);
+				
+				listModelCategories.addElement(c);
+				
+				listCategories.setModel(listModelCategories);
+				
+			}
+			
+		});
+		
+		btnNewLevel = new JButton("Añadir nivel");
 		
 		btnNewLevel.setEnabled(false);
 		
@@ -242,24 +249,25 @@ public class CoursesManager extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				String levelName = JOptionPane.showInputDialog("Nom del nivell: ");
+				ILevelDao levelManager = new LevelDaoImpl();
 				
-				Level l = new Level(levelName);
+				String levelName = JOptionPane.showInputDialog("Introduce el nombre del nivel: ");
 				
-				Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1).getCategoriesList().get((int) listCategories.getSelectedValue().getId() - 1).addLevel(l);
+				Level l = new Level(levelName, listCategories.getSelectedValue());
+				
+				levelManager.saveLevel(l);
+				
+				listCategories.getSelectedValue().addLevel(l);
 				
 				listModelLevels.addElement(l);
 				
 				listLevels.setModel(listModelLevels);
 				
 			}
+			
 		});
 		
-		
-		
-		
-		
-		btnNewExercise = new JButton("AÃ‘ADIR PREGUNTA");
+		btnNewExercise = new JButton("AÑADIR PREGUNTA");
 		
 		btnNewExercise.setEnabled(false);
 		
@@ -368,24 +376,46 @@ public class CoursesManager extends JFrame {
 	
 	public void setCmbOptions() {
 				
-		for (int i = 0; i < Interface.languagesList.size(); i++) {
+		for (int i = 0; i < languagesList.size(); i++) {
 			
-			cmbLanguageBase.addItem(Interface.languagesList.get(i));
-			cmbLanguageCourse.addItem(Interface.languagesList.get(i));
+			cmbLanguageBase.addItem(languagesList.get(i));
+			cmbLanguageCourse.addItem(languagesList.get(i));
 			
 		}		
 		
 	}
 	
-	public void updateCoursesList(DefaultListModel<Course> listModelCourses) {
+	public void getLanguages() throws IOException {
 		
-		if (listModelCourses.getSize() == 0 && cmbLanguageBase.getSelectedIndex() != 0 && cmbLanguageCourse.getSelectedIndex() != 0) {
+		ILanguageDao languageManager = new LanguageDaoImpl();
+		
+		languagesList = languageManager.getAllLanguages();
+		
+		languagesList.add(0, new Language("Seleccione un idioma", "XX"));
+		
+	}
+	
+	public void updateCoursesList() {
+		
+		ICourseDao courseManager = new CourseDaoImpl();
+		
+		coursesList = courseManager.getAllCoursesByLanguagesId(cmbLanguageBase.getSelectedIndex(), cmbLanguageCourse.getSelectedIndex());
+		
+		listModelCourses = new DefaultListModel<Course>();
+				
+		if (coursesList.size() == 0 && cmbLanguageBase.getSelectedIndex() != 0 && cmbLanguageCourse.getSelectedIndex() != 0) {
 			
 			btnNewCourse.setEnabled(true);
 			
 		} else {
 			
 			btnNewCourse.setEnabled(false);
+			
+			for (Course c : coursesList) {
+				
+				listModelCourses.addElement(c);
+				
+			}			
 			
 		}
 	
@@ -395,13 +425,15 @@ public class CoursesManager extends JFrame {
 	
 	public void updateCategoriesList() {
 		
+		ICategoryDao categoryManager = new CategoryDaoImpl();
+		
+		categoriesList = categoryManager.getAllCategoriesByCourseId(listCourses.getSelectedValue().getId());
+		
 		listModelCategories = new DefaultListModel<Category>();
 		
-		Course c = Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1);
-		
-		for (int i = 0; i < c.getCategoriesList().size(); i++) {
+		for (Category c : categoriesList) {
 			
-			listModelCategories.addElement(c.getCategoriesList().get(i));
+			listModelCategories.addElement(c);
 			
 		}
 		
@@ -409,19 +441,52 @@ public class CoursesManager extends JFrame {
 		
 	}
 	
-public void updateLevelsList() {
+	public void updateLevelsList() {
+		
+		ILevelDao levelManager = new LevelDaoImpl();
+		
+		levelsList = levelManager.getAllLevelsByCategoryId(listCategories.getSelectedValue().getId());
 		
 		listModelLevels = new DefaultListModel<Level>();
 		
-		Category c = Interface.coursesList.get((int) listCourses.getSelectedValue().getId() - 1).getCategoriesList().get((int) listCategories.getSelectedValue().getId() - 1);
-		
-		for (int i = 0; i < c.getLevelsList().size(); i++) {
+		for (Level l : levelsList) {
 			
-			listModelLevels.addElement(c.getLevelsList().get(i));
+			listModelLevels.addElement(l);
 			
 		}
 		
 		listLevels.setModel(listModelLevels);
+		
+	}
+	
+	public void createLanguages() throws IOException {
+		
+		ILanguageDao languageManager = new LanguageDaoImpl();
+				
+		languagesList = new ArrayList<Language>();
+		
+		languagesList.add(new Language("Seleccione un idioma", "XX"));
+		
+		FileReader fr = new FileReader ("src/resources/languages.txt");
+			
+		BufferedReader br = new BufferedReader(fr);
+		
+		String languageName;
+		String languageCode;
+		String languageData;
+		
+		while ((languageData = br.readLine()) != null) {
+			
+			languageName = languageData.substring(0, languageData.length()-3);
+			languageCode = languageData.substring(languageName.length() + 1);	
+			
+			languageManager.saveLanguage(new Language(languageName, languageCode));
+			
+			languagesList.add(new Language(languageName, languageCode));
+			
+		}
+	
+		br.close();
 		
 	}
 	
