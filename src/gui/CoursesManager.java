@@ -29,6 +29,7 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 
 import lib.duolingoproject.hibernate.model.*;
+import lib.duolingoproject.hibernate.util.JSONObjectConverter;
 import lib.duolingoproject.hibernate.dao.*;
 import lib.duolingoproject.hibernate.dao.i.*;
 
@@ -38,6 +39,7 @@ public class CoursesManager extends JFrame {
 	private List<Language> languagesList;
 	private List<Category> categoriesList;
 	private List<Level> levelsList;
+	private List<Exercise> exercisesList;
 
 	private JPanel contentPane;
 	
@@ -105,6 +107,10 @@ public class CoursesManager extends JFrame {
 				listModelCategories = new DefaultListModel<Category>();
 				
 				listCategories.setModel(listModelCategories);
+				
+				listModelLevels = new DefaultListModel<Level>();
+				
+				listLevels.setModel(listModelLevels);
 				
 				btnNewCategory.setEnabled(false);
 				
@@ -222,11 +228,17 @@ public class CoursesManager extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
+				listModelLevels = new DefaultListModel<Level>();
+				
+				listLevels.setModel(listModelLevels);
+				
 				ICategoryDao categoryManager = new CategoryDaoImpl();
 
 				String categoryName = JOptionPane.showInputDialog("Introduce el nombre de la categoría: ");
 				
 				Category c = new Category(categoryName , listCourses.getSelectedValue());
+				
+				categoriesList.add(c);
 				
 				categoryManager.saveCategory(c);
 							
@@ -255,6 +267,8 @@ public class CoursesManager extends JFrame {
 				
 				Level l = new Level(levelName, listCategories.getSelectedValue());
 				
+				levelsList.add(l);
+				
 				levelManager.saveLevel(l);
 				
 				listCategories.getSelectedValue().addLevel(l);
@@ -269,11 +283,32 @@ public class CoursesManager extends JFrame {
 		
 		btnNewExercise = new JButton("AÑADIR PREGUNTA");
 		
-		btnNewExercise.setEnabled(false);
+		btnNewExercise.setEnabled(true);
+		
+		btnNewExercise.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				IExerciseDao exerciseManager = new ExerciseDaoImpl();
+				
+				String levelName = JOptionPane.showInputDialog("Introduce el nombre del nivel: ");
+				
+				JSONObjectConverter JSONManager;
+				
+//				Exercise e = new Exercise(levelName, listCategories.getSelectedValue(), JSONManager.createExerciseTestJSON("original", "translated", "mistake1", "mistake2"));
+				
+//				exercisesList.add(e);
+//				
+//				exerciseManager.saveExercise(e);
+				
+			}
+			
+		});
 		
 		btnShowExercises = new JButton("VISUALIZAR PREGUNTAS");
 		
-		btnShowExercises.setEnabled(false);
+		btnShowExercises.setEnabled(true);
 		
 		glContentPane = new GroupLayout(contentPane);
 		
