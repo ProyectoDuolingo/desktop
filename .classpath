@@ -7,5 +7,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/hibernate-lib"/>
+	<classpathentry kind="lib" path="/home/super/Baixades/json-20201115.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

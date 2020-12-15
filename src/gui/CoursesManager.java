@@ -116,13 +116,13 @@ public class CoursesManager extends JFrame {
 				
 				if (cmbLanguageBase.getSelectedIndex() == 0 && cmbLanguageCourse.getSelectedIndex() == 0) {					
 					
-					JOptionPane.showMessageDialog(null, "Asegúrese de seleccionar como mínimo un idioma origen o un idioma destino.");
+					JOptionPane.showMessageDialog(null, "Asegï¿½rese de seleccionar como mï¿½nimo un idioma origen o un idioma destino.");
 					
 					return;
 					
 				} else if (cmbLanguageBase.getSelectedIndex() == cmbLanguageCourse.getSelectedIndex()) {
 					
-					JOptionPane.showMessageDialog(null, "Asegúrese de no seleccionar el mismo idioma como origen y destino.");
+					JOptionPane.showMessageDialog(null, "Asegï¿½rese de no seleccionar el mismo idioma como origen y destino.");
 					
 					return;
 					
@@ -167,9 +167,9 @@ public class CoursesManager extends JFrame {
 			
 		});
 		
-		lblLevels = new JLabel("Niveles de la categoría seleccionada");
+		lblLevels = new JLabel("Niveles de la categorï¿½a seleccionada");
 		
-		lblCategories = new JLabel("Categorías del curso seleccionado");
+		lblCategories = new JLabel("Categorï¿½as del curso seleccionado");
 		
 		lblCourses = new JLabel("Cursos");
 		
@@ -188,6 +188,10 @@ public class CoursesManager extends JFrame {
 					btnNewCategory.setEnabled(true);
 					
 					updateCategoriesList();
+					
+					listModelLevels = new DefaultListModel<Level>();
+					
+					listLevels.setModel(listModelLevels);					
 					
 				}
 				
@@ -219,7 +223,7 @@ public class CoursesManager extends JFrame {
 		
 		listLevels = new JList();
 		
-		btnNewCategory = new JButton("Añadir categoría");
+		btnNewCategory = new JButton("Aï¿½adir categorï¿½a");
 		
 		btnNewCategory.setEnabled(false);
 		
@@ -234,7 +238,7 @@ public class CoursesManager extends JFrame {
 				
 				ICategoryDao categoryManager = new CategoryDaoImpl();
 
-				String categoryName = JOptionPane.showInputDialog("Introduce el nombre de la categoría: ");
+				String categoryName = JOptionPane.showInputDialog("Introduce el nombre de la categorï¿½a: ");
 				
 				Category c = new Category(categoryName , listCourses.getSelectedValue());
 				
@@ -252,7 +256,7 @@ public class CoursesManager extends JFrame {
 			
 		});
 		
-		btnNewLevel = new JButton("Añadir nivel");
+		btnNewLevel = new JButton("Aï¿½adir nivel");
 		
 		btnNewLevel.setEnabled(false);
 		
@@ -269,9 +273,11 @@ public class CoursesManager extends JFrame {
 				
 				levelsList.add(l);
 				
+				listCategories.getSelectedValue().addLevel(l);
+				
 				levelManager.saveLevel(l);
 				
-				listCategories.getSelectedValue().addLevel(l);
+				
 				
 				listModelLevels.addElement(l);
 				
@@ -281,7 +287,7 @@ public class CoursesManager extends JFrame {
 			
 		});
 		
-		btnNewExercise = new JButton("AÑADIR PREGUNTA");
+		btnNewExercise = new JButton("AÃ‘ADIR PREGUNTA");
 		
 		btnNewExercise.setEnabled(true);
 		
@@ -292,9 +298,15 @@ public class CoursesManager extends JFrame {
 				
 				IExerciseDao exerciseManager = new ExerciseDaoImpl();
 				
-				String levelName = JOptionPane.showInputDialog("Introduce el nombre del nivel: ");
-				
-				JSONObjectConverter JSONManager;
+				if (listLevels.getSelectedValue() != null) {
+					
+					JSONObjectConverter JSONManager;
+					
+				} else {
+					
+					JOptionPane.showMessageDialog(null, "AsegÃºrese de seleccionar un nivel al que aÃ±adir el ejercicio.");
+					
+				}
 				
 //				Exercise e = new Exercise(levelName, listCategories.getSelectedValue(), JSONManager.createExerciseTestJSON("original", "translated", "mistake1", "mistake2"));
 				
