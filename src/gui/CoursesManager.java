@@ -261,7 +261,20 @@ public class CoursesManager extends JFrame {
 		
 		btnNewExercise = new JButton("AÑADIR PREGUNTA");
 		
-		btnNewExercise.setEnabled(false);
+		btnNewExercise.setEnabled(true);
+		
+		btnNewExercise.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				AddExercise addExercise = new AddExercise();
+				addExercise.setVisible(true);
+				
+			}
+		});
+		
+		
 		
 		btnShowExercises = new JButton("VISUALIZAR PREGUNTAS");
 		
