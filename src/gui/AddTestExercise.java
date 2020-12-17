@@ -8,6 +8,11 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import org.json.JSONObject;
+
+import lib.duolingoproject.hibernate.model.Exercise;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
@@ -17,17 +22,15 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
-public class addTestExercise extends JFrame {
+public class AddTestExercise extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textSentToTrans;
 	private JTextField textSentCorrect;
 	private JTextField textSentWrong1;
 	private JTextField textSentWrong2;
-	private JLabel lblSentWrong1;
-
-
-	public addTestExercise() {
+	
+	public AddTestExercise() {
 		
 		setIconImage(Interface.iconImage);
 		
@@ -46,7 +49,7 @@ public class addTestExercise extends JFrame {
 		textSentCorrect = new JTextField();
 		textSentCorrect.setColumns(10);
 		
-		lblSentWrong1 = new JLabel("Frase incorrecta 1:");
+		JLabel lblSentWrong1 = new JLabel("Frase incorrecta 1:");
 		
 		textSentWrong1 = new JTextField();
 		textSentWrong1.setColumns(10);
@@ -68,9 +71,26 @@ public class addTestExercise extends JFrame {
 					
 				} else {
 					
+					JSONObject content = new JSONObject();
 					
-					
-					setVisible(false);
+					try {
+						
+						content.put("phraseOriginal", textSentToTrans.getText());
+						content.put("phraseTranslated", textSentCorrect.getText());
+						content.put("phraseMistake1", textSentWrong1.getText());
+						content.put("phraseMistake2", textSentWrong2.getText());
+						
+						ExerciseManager.exerciseDaoManager.saveExercise(new Exercise(ExerciseManager.level, ExerciseManager.exercisesTypes.get(0), content));
+						
+						setVisible(false);
+						
+					} catch (Exception e) {
+						
+						
+						
+					}
+				
+				
 					
 				}
 

@@ -29,7 +29,6 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 
 import lib.duolingoproject.hibernate.model.*;
-import lib.duolingoproject.hibernate.util.JSONObjectConverter;
 import lib.duolingoproject.hibernate.dao.*;
 import lib.duolingoproject.hibernate.dao.i.*;
 
@@ -40,6 +39,8 @@ public class CoursesManager extends JFrame {
 	private List<Category> categoriesList;
 	private List<Level> levelsList;
 	private List<Exercise> exercisesList;
+	
+	private ExerciseManager exerciseManager;
 
 	private JPanel contentPane;
 	
@@ -287,7 +288,7 @@ public class CoursesManager extends JFrame {
 			
 		});
 		
-		btnNewExercise = new JButton("AÃ‘ADIR PREGUNTA");
+		btnNewExercise = new JButton("AÑADIR PREGUNTA");
 		
 		btnNewExercise.setEnabled(true);
 		
@@ -295,25 +296,19 @@ public class CoursesManager extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
-				IExerciseDao exerciseManager = new ExerciseDaoImpl();
-				
+			
 				if (listLevels.getSelectedValue() != null) {
 					
-					JSONObjectConverter JSONManager;
+					exerciseManager = new ExerciseManager(listCourses.getSelectedValue(), listCategories.getSelectedValue(), listLevels.getSelectedValue());
+					
+					exerciseManager.setVisible(true);
 					
 				} else {
 					
-					JOptionPane.showMessageDialog(null, "AsegÃºrese de seleccionar un nivel al que aÃ±adir el ejercicio.");
+					JOptionPane.showMessageDialog(null, "Asegúrese de seleccionar un curso, categoria y nivel al que añadir el ejercicio.");
 					
 				}
-				
-//				Exercise e = new Exercise(levelName, listCategories.getSelectedValue(), JSONManager.createExerciseTestJSON("original", "translated", "mistake1", "mistake2"));
-				
-//				exercisesList.add(e);
-//				
-//				exerciseManager.saveExercise(e);
-				
+							
 			}
 			
 		});

@@ -13,7 +13,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import lib.duolingoproject.hibernate.dao.ExerciseDaoImpl;
 import lib.duolingoproject.hibernate.dao.ExerciseTypeDaoImpl;
+import lib.duolingoproject.hibernate.dao.i.IExerciseDao;
 import lib.duolingoproject.hibernate.dao.i.IExerciseTypeDao;
 import lib.duolingoproject.hibernate.model.Category;
 import lib.duolingoproject.hibernate.model.Course;
@@ -36,12 +38,15 @@ public class ExerciseManager extends JFrame {
 	public static Category category;
 	public static Level level;
 	public static List<ExerciseType> exercisesTypes;
+	public static IExerciseDao exerciseDaoManager;
 
 	private JPanel contentPane;
 	private JLabel lblIdiDest;
 	private JLabel lblCategory;
 	private Image image;
 	private Icon icon;
+	
+	private AddTestExercise testManager;
 	
 	public ExerciseManager(Course course, Category category, Level level) {
 		
@@ -54,6 +59,8 @@ public class ExerciseManager extends JFrame {
 		IExerciseTypeDao exerciseTypeManager = new ExerciseTypeDaoImpl();
 		
 		exercisesTypes = exerciseTypeManager.getAllExercisesType();
+		
+		exerciseDaoManager = new ExerciseDaoImpl();
 		
 		setBounds(200, 200, 900, 600);
 		contentPane = new JPanel();
@@ -81,8 +88,8 @@ public class ExerciseManager extends JFrame {
 		
 			public void actionPerformed(ActionEvent arg0) {
 				
-				addTestExercise addtestexercise = new addTestExercise();
-				addtestexercise.setVisible(true);
+				testManager = new AddTestExercise();
+				testManager.setVisible(true);
 				
 			}
 		});
