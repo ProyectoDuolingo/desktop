@@ -116,13 +116,13 @@ public class CoursesManager extends JFrame {
 				
 				if (cmbLanguageBase.getSelectedIndex() == 0 && cmbLanguageCourse.getSelectedIndex() == 0) {					
 					
-					JOptionPane.showMessageDialog(null, "Asegï¿½rese de seleccionar como mï¿½nimo un idioma origen o un idioma destino.");
+					JOptionPane.showMessageDialog(null, "Asegúrese de seleccionar como mínimo un idioma origen o un idioma destino.");
 					
 					return;
 					
 				} else if (cmbLanguageBase.getSelectedIndex() == cmbLanguageCourse.getSelectedIndex()) {
 					
-					JOptionPane.showMessageDialog(null, "Asegï¿½rese de no seleccionar el mismo idioma como origen y destino.");
+					JOptionPane.showMessageDialog(null, "Asegúrese de no seleccionar el mismo idioma como origen y destino.");
 					
 					return;
 					
