@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -17,14 +19,17 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
+import java.awt.Font;
 
 public class AddExercise extends JFrame {
 
 	private JPanel contentPane;
-	private JLabel lblIdiomaDest;
-	private JLabel lblCategoria;
+	private JLabel lblIdiDest;
+	private JLabel lblCategory;
 	private Image image;
 	private Icon icon;
+	
+	
 	
 
 	/**
@@ -53,17 +58,29 @@ public class AddExercise extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
-		JLabel lblIdiomaOrigen = new JLabel("Idioma origen:");
+		JLabel lblIdiOri = new JLabel("Idioma origen:");
+		lblIdiOri.setFont(new Font("Dialog", Font.PLAIN, 18));
 		
-		lblIdiomaDest = new JLabel("Idioma destí:");
+		lblIdiDest = new JLabel("Idioma destí:");
+		lblIdiDest.setFont(new Font("Dialog", Font.PLAIN, 18));
 		
-		lblCategoria = new JLabel("Categoria:");
+		lblCategory = new JLabel("Categoria:");
+		lblCategory.setFont(new Font("Dialog", Font.PLAIN, 18));
 		
 		JButton btnTest = new JButton("");
-	
 		Image test = Toolkit.getDefaultToolkit().getImage(AddExercise.class.getResource("/image/test.png"));
 		icon = new ImageIcon(test.getScaledInstance(100, 100, 100));
 		btnTest.setIcon(icon);
+		
+		btnTest.addActionListener(new ActionListener() {
+		
+			public void actionPerformed(ActionEvent arg0) {
+				
+				addTestExercise addtestexercise = new addTestExercise();
+				addtestexercise.setVisible(true);
+				
+			}
+		});
 		
 		
 		
@@ -107,7 +124,8 @@ public class AddExercise extends JFrame {
 		icon = new ImageIcon(pairmake.getScaledInstance(100, 100, 100));
 		btnPairMaking.setIcon(icon);
 		
-		JLabel lblNivell = new JLabel("Nivell:");
+		JLabel lblLevel = new JLabel("Nivell:");
+		lblLevel.setFont(new Font("Dialog", Font.PLAIN, 18));
 		
 		
 		
@@ -118,10 +136,10 @@ public class AddExercise extends JFrame {
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
-							.addComponent(lblIdiomaOrigen, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(lblIdiomaDest, Alignment.LEADING)
-							.addComponent(lblCategoria, Alignment.LEADING))
-						.addComponent(lblNivell))
+							.addComponent(lblIdiOri, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(lblIdiDest, Alignment.LEADING)
+							.addComponent(lblCategory, Alignment.LEADING))
+						.addComponent(lblLevel))
 					.addPreferredGap(ComponentPlacement.RELATED, 269, Short.MAX_VALUE)
 					.addGroup(gl_contentPane.createSequentialGroup()
 						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
@@ -145,11 +163,11 @@ public class AddExercise extends JFrame {
 					.addGap(64)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(lblIdiomaOrigen)
+							.addComponent(lblIdiOri)
 							.addGap(31)
-							.addComponent(lblIdiomaDest)
+							.addComponent(lblIdiDest)
 							.addGap(31)
-							.addComponent(lblCategoria))
+							.addComponent(lblCategory))
 						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
 							.addComponent(btnTest, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
@@ -160,7 +178,7 @@ public class AddExercise extends JFrame {
 							.addGap(31)
 							.addComponent(btnLisOpen, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE))
 						.addGroup(Alignment.TRAILING, gl_contentPane.createParallelGroup(Alignment.LEADING)
-							.addComponent(lblNivell)
+							.addComponent(lblLevel)
 							.addComponent(btnLisReorder, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)))
 					.addGap(43)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
